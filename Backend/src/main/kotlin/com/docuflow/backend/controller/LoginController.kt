@@ -13,11 +13,11 @@ class LoginController {
 
     @PostMapping
     fun login(@RequestBody request: LoginRequest): ResponseEntity<Map<String, String>> {
-        // Simulación: usuario fijo "estudiante" con pass "123456"
         if (request.username == "estudiante" && request.password == "123456") {
             val token = JwtUtil.generateToken(request.username)
             return ResponseEntity.ok(mapOf("token" to token))
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mapOf("error" to "Credenciales inválidas"))
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(mapOf("error" to "Credenciales inválidas"))
     }
 }
