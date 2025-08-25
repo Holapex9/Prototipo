@@ -30,7 +30,7 @@ class SecurityConfig {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://127.0.0.1:5500", "http://localhost:5500") // tu Live Server
+        configuration.allowedOrigins = listOf("http://127.0.0.1:5500", "http://localhost:5500", "https://touched-included-elephant.ngrok-free.app", "https://TU_USUARIO.github.io") // tu Live Server
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
