@@ -1,39 +1,30 @@
-// script.js
+// script.js (para login)
 
-document.getElementById('uploadForm').addEventListener('submit', async function(event) {
-    event.preventDefault();  // Evitar que el formulario se envíe de forma tradicional
+document.getElementById('loginForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
 
-    // Obtener el archivo seleccionado
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput.files[0];  // Primer archivo seleccionado
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-    const token = localStorage.getItem('token');  // Obtener el token JWT desde localStorage
+    try {
+        const response = await fetch('http://localhost:8080/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
 
-    if (!token) {
-        alert("Por favor, inicie sesión primero.");
-        return;
-    }
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('token', data.token); // Guardamos el JWT
 
-    const formData = new FormData();
-    formData.append("file", file);  // Agregar el archivo al FormData
-
-    // Hacer la petición POST al backend
-    const response = await fetch('http://localhost:8080/upload', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`  // Agregar el token en el header
-        },
-        body: formData
-    });
-
-    // Verificar si la subida fue exitosa
-    if (response.ok) {
-        const data = await response.json();  // Si la subida es exitosa, obtener la respuesta
-        document.getElementById('success-message').textContent = 'Archivo subido exitosamente';
-        document.getElementById('success-message').style.display = 'block';  // Mostrar el mensaje de éxito
-    } else {
-        const error = await response.text();  // Si ocurre un error, obtener el mensaje de error
-        document.getElementById('error-message').textContent = error;
-        document.getElementById('error-message').style.display = 'block';  // Mostrar el mensaje de error
+            // Redirigir a upload.html
+            window.location.href = 'upload.html';
+        } else {
+            document.getElementById('error-message').textContent = 'Credenciales incorrectas';
+            document.getElementById('error-message').style.display = 'block';
+        }
+    } catch (error) {
+        console.error("Error en la conexión:", error);
+        alert("No se pudo conectar con el servidor.");
     }
 });
