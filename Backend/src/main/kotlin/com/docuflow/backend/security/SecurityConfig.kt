@@ -15,10 +15,10 @@ class SecurityConfig {
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }
-            .cors { } // 🚨 activar CORS
+            .cors { } // habilitar CORS
             .authorizeHttpRequests {
                 it.requestMatchers("/login").permitAll()
-                it.anyRequest().permitAll()
+                it.anyRequest().permitAll() // después puedes cambiar a .authenticated()
             }
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
@@ -30,7 +30,12 @@ class SecurityConfig {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://127.0.0.1:5500", "http://localhost:5500", "https://touched-included-elephant.ngrok-free.app", "https://TU_USUARIO.github.io") // tu Live Server
+        configuration.allowedOrigins = listOf(
+            "http://127.0.0.1:5500", 
+            "http://localhost:5500",
+            "https://touched-included-elephant.ngrok-free.app", // dominio ngrok
+            "https://holapex9.github.io" // tu GitHub Pages
+        )
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
