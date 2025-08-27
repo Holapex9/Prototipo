@@ -5,10 +5,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadFiles();
 });
 
-document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+document.getElementById("uploadForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const file = document.getElementById('fileInput').files[0];
+  const file = document.getElementById("fileInput").files[0];
   if (!file) return showError("error-message", "Selecciona un archivo");
 
   const result = await apiUpload(file);
@@ -20,18 +20,20 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
   }
 });
 
-// 🔹 Función para cargar y mostrar los archivos
+// 🔹 Cargar y mostrar los archivos de la BD
 async function loadFiles() {
   const result = await apiGetFiles();
   const tbody = document.querySelector("#filesTable tbody");
   tbody.innerHTML = "";
 
   if (result.success && result.files.length > 0) {
-    result.files.forEach(file => {
+    result.files.forEach((file) => {
+      const sizeKB = file.size ? (file.size / 1024).toFixed(2) + " KB" : "N/A";
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${file.filename}</td>
-        <td>${file.size ? (file.size / 1024).toFixed(2) + " KB" : "N/A"}</td>
+        <td>${file.fileType || "desconocido"}</td>
+        <td>${sizeKB}</td>
         <td>
           <button class="btn btn-danger btn-sm" data-id="${file.id}">Eliminar</button>
         </td>
@@ -39,8 +41,8 @@ async function loadFiles() {
       tbody.appendChild(row);
     });
 
-    // Eventos para eliminar
-    document.querySelectorAll(".btn-danger").forEach(btn => {
+    // Eventos para eliminar archivo
+    document.querySelectorAll(".btn-danger").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const id = btn.getAttribute("data-id");
         const del = await apiDeleteFile(id);
@@ -53,6 +55,6 @@ async function loadFiles() {
       });
     });
   } else {
-    tbody.innerHTML = `<tr><td colspan="3">No hay archivos subidos</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center">No hay archivos subidos</td></tr>`;
   }
 }

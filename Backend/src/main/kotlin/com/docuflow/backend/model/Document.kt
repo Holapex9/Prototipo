@@ -19,5 +19,5 @@ data class Document(
     val filePath: String,
 
     @Column(nullable = false)
-    val size: Long // 🆕 tamaño en bytes
+    val size: Long // 🆕 Tamaño del archivo en bytes
 )

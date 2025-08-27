@@ -46,11 +46,12 @@ class UploadController {
         val filePath = "${uploadDir.absolutePath}/${file.originalFilename}"
         file.transferTo(File(filePath))
 
-        // 4. Guardar metadatos en la BD
+        // 4. Guardar metadatos en la BD (✅ ahora con el size)
         val document = Document(
             filename = file.originalFilename!!,
             fileType = file.contentType ?: "desconocido",
-            filePath = filePath
+            filePath = filePath,
+            size = file.size
         )
         documentRepository.save(document)
 
