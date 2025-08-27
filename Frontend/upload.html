@@ -6,9 +6,6 @@
   <title>Subir Archivo</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
-  <script type="module" src="services/apiService.js"></script>
-  <script type="module" src="utils/uiHelpers.js"></script>
-  <script type="module" src="controllers/uploadController.js"></script>
 </head>
 <body>
   <div class="container mt-5">
@@ -22,8 +19,8 @@
       <button type="submit" class="btn btn-primary w-100">Subir</button>
     </form>
 
-    <div id="error-message" class="alert alert-danger mt-3"></div>
-    <div id="success-message" class="alert alert-success mt-3"></div>
+    <div id="error-message" class="alert alert-danger mt-3" style="display:none"></div>
+    <div id="success-message" class="alert alert-success mt-3" style="display:none"></div>
 
     <!-- Tabla de archivos subidos -->
     <div class="mt-5">
@@ -40,5 +37,8 @@
       </table>
     </div>
   </div>
+
+  <!-- 🚨 SOLO el controlador, que ya importa a los demás -->
+  <script type="module" src="controllers/uploadController.js"></script>
 </body>
 </html>
