@@ -1,9 +1,8 @@
 @echo off
-echo 🚀 Iniciando Backend de DocuFlow...
-cd /d "%~dp0" 
+echo 🚀 Iniciando Backend con Git Bash...
 
-:: Levantar el backend con Maven Wrapper
-start cmd /k ".\mvnw spring-boot:run"
+:: Abrir Git Bash y ejecutar Spring Boot
+start "" "E:\Git\bin\bash.exe" -lc "cd '%~dp0' && ./mvnw spring-boot:run"
 
 timeout /t 10 >nul
 
