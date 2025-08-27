@@ -1,11 +1,11 @@
 @echo off
 setlocal
 
-REM === Ruta a Git Bash (ajústala si está en otro directorio) ===
+REM === Ruta a Git Bash (ajusta si está en otra carpeta) ===
 set GIT_BASH="E:\Git\bin\bash.exe"
 
 REM === Ruta a tu backend ===
-set BACKEND_DIR=E:\GitHub\Prototipo\Backend
+set BACKEND_DIR=E:/GitHub/Prototipo/Backend
 
 REM === URL estática de Ngrok ===
 set NGROK_URL=touched-included-elephant.ngrok-free.app
@@ -25,7 +25,7 @@ if %ERRORLEVEL%==0 (
 
 REM --- Lanzar Backend en Git Bash ---
 echo ▶️ Iniciando Backend con Git Bash...
-start %GIT_BASH% --login -i -c "cd %BACKEND_DIR% && ./mvnw spring-boot:run"
+start %GIT_BASH% -c "cd '%BACKEND_DIR%' && ./mvnw spring-boot:run"
 
 echo ================================
 echo ✅ Todo en marcha, revisa las ventanas abiertas.
