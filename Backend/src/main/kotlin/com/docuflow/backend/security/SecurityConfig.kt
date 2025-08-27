@@ -18,7 +18,8 @@ class SecurityConfig {
             .cors { } // habilitar CORS
             .authorizeHttpRequests {
                 it.requestMatchers("/login").permitAll()
-                it.anyRequest().permitAll() // después puedes cambiar a .authenticated()
+                it.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // 🔥 permitir preflight
+                it.anyRequest().permitAll()
             }
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
@@ -26,19 +27,19 @@ class SecurityConfig {
         return http.build()
     }
 
-    // 🚨 Configuración CORS
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = listOf(
-            "http://127.0.0.1:5500", 
+            "http://127.0.0.1:5500",
             "http://localhost:5500",
-            "https://touched-included-elephant.ngrok-free.app", // dominio ngrok
-            "https://holapex9.github.io" // tu GitHub Pages
+            "https://touched-included-elephant.ngrok-free.app",
+            "https://holapex9.github.io"
         )
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
+        configuration.exposedHeaders = listOf("Authorization") // 🔥 si necesitas leer el token desde headers
 
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
