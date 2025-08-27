@@ -16,7 +16,7 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     showSuccess("success-message", result.mensaje);
     await loadFiles();
   } else {
-    showError("error-message", result.error);
+    showError("error-message", result.error || "Error al subir archivo");
   }
 });
 
@@ -31,7 +31,7 @@ async function loadFiles() {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${file.filename}</td>
-        <td>${(file.filePath ? file.filePath.length : 0)} KB</td>
+        <td>${file.size ? (file.size / 1024).toFixed(2) + " KB" : "N/A"}</td>
         <td>
           <button class="btn btn-danger btn-sm" data-id="${file.id}">Eliminar</button>
         </td>
@@ -48,7 +48,7 @@ async function loadFiles() {
           showSuccess("success-message", del.mensaje);
           await loadFiles();
         } else {
-          showError("error-message", del.error);
+          showError("error-message", del.error || "Error al eliminar archivo");
         }
       });
     });

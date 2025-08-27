@@ -58,11 +58,4 @@ class UploadController {
 
         return ResponseEntity.ok(mapOf("mensaje" to "Archivo subido exitosamente"))
     }
-
-    // 🔹 Nuevo endpoint: listar archivos
-    @GetMapping
-    fun listFiles(): ResponseEntity<List<Document>> {
-        val documents = documentRepository.findAll()
-        return ResponseEntity.ok(documents)
-    }
 }
