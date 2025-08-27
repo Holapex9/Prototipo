@@ -61,3 +61,26 @@ export async function apiDeleteFile(id) {
     return { success: false, error: "No se pudo conectar con el servidor." };
   }
 }
+
+// 🔑 Login
+export async function login(username, password) {
+  try {
+    const response = await fetch("https://touched-included-elephant.ngrok-free.app/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem("token", data.token); // guarda el JWT
+      return { success: true, token: data.token };
+    } else {
+      const error = await response.json().catch(() => ({ error: "Credenciales inválidas" }));
+      return { success: false, error: error.error };
+    }
+  } catch (err) {
+    console.error("Error en login:", err);
+    return { success: false, error: "No se pudo conectar con el servidor" };
+  }
+}

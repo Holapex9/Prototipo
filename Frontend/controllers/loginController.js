@@ -1,17 +1,17 @@
 import { login } from "../services/apiService.js";
-import { mostrarError } from "../utils/uiHelpers.js";
+import { showError } from "../utils/uiHelpers.js";
 
-document.getElementById("loginForm").addEventListener("submit", async (event) => {
-    event.preventDefault();
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-    try {
-        const data = await login(username, password);
-        localStorage.setItem("token", data.token);
-        window.location.href = "upload.html";
-    } catch (error) {
-        mostrarError("error-message", error.message);
-    }
+  const result = await login(username, password);
+
+  if (result.success) {
+    window.location.href = "upload.html"; // redirigir si login OK
+  } else {
+    showError("error-message", result.error);
+  }
 });
