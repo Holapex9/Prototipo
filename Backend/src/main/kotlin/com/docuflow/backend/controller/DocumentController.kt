@@ -10,9 +10,15 @@ import org.springframework.web.bind.annotation.*
 class DocumentController(private val documentRepository: DocumentRepository) {
 
     // 🟢 Listar todos los archivos
-    @GetMapping
-    fun listFiles(): ResponseEntity<List<Document>> {
-        val files = documentRepository.findAll()
+    @GetMapping("/{id}")
+    fun getFile(@PathVariable id: Long): ResponseEntity<Any> {
+        val file = documentRepository.findById(id)
+        return if (file.isPresent) {
+            ResponseEntity.ok(file.get())
+        } else {
+            ResponseEntity.status(404).body(mapOf("error" to "Archivo no encontrado"))
+    }
+
         return ResponseEntity.ok(files)
     }
 
@@ -31,7 +37,7 @@ class DocumentController(private val documentRepository: DocumentRepository) {
             documentRepository.deleteById(id)
             ResponseEntity.ok(mapOf("mensaje" to "Archivo eliminado"))
         } else {
-            ResponseEntity.notFound().build()
+            ResponseEntity.status(404).body(mapOf("error" to "Archivo no encontrado"))
         }
     }
 }
