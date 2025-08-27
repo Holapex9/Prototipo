@@ -1,13 +1,33 @@
 @echo off
-echo 🚀 Iniciando Backend con Git Bash...
+setlocal
 
-:: Abrir Git Bash y ejecutar Spring Boot
-start "" "E:\Git\bin\bash.exe" -lc "cd '%~dp0' && ./mvnw spring-boot:run"
+REM === Ruta a Git Bash (ajústala si está en otro directorio) ===
+set GIT_BASH="E:\Git\bin\bash.exe"
 
-timeout /t 30 >nul
+REM === Ruta a tu backend ===
+set BACKEND_DIR=E:\GitHub\Prototipo\Backend
 
-echo 🌐 Iniciando Ngrok en puerto 8080 con dominio estatico...
-start cmd /k "ngrok http --url=touched-included-elephant.ngrok-free.app 8080"
+REM === URL estática de Ngrok ===
+set NGROK_URL=touched-included-elephant.ngrok-free.app
 
-echo ✅ Backend y Ngrok levantados correctamente.
+echo ================================
+echo 🚀 Iniciando Backend + Ngrok
+echo ================================
+
+REM --- Verificar si Ngrok ya está corriendo ---
+tasklist /FI "IMAGENAME eq ngrok.exe" | find /I "ngrok.exe" >nul
+if %ERRORLEVEL%==0 (
+    echo ✅ Ngrok ya está corriendo, no se lanzará de nuevo.
+) else (
+    echo ▶️ Lanzando Ngrok...
+    start cmd /k "ngrok http --url=%NGROK_URL% 8080"
+)
+
+REM --- Lanzar Backend en Git Bash ---
+echo ▶️ Iniciando Backend con Git Bash...
+start %GIT_BASH% --login -i -c "cd %BACKEND_DIR% && ./mvnw spring-boot:run"
+
+echo ================================
+echo ✅ Todo en marcha, revisa las ventanas abiertas.
+echo ================================
 pause
