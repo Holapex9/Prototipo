@@ -33,10 +33,13 @@ export async function apiGetFiles() {
     });
 
     if (response.ok) {
-      return { success: true, files: await response.json() };
+      // 👇 Si la respuesta no es JSON válido, lo captura
+      const data = await response.json().catch(() => null);
+      if (data) return { success: true, files: data };
+      return { success: false, error: "Respuesta inválida del servidor" };
     } else {
-      const error = await response.json().catch(() => ({ error: "Respuesta inválida del servidor" }));
-      return { success: false, error: error.error || "Error al obtener archivos" };
+      const error = await response.json().catch(() => ({ error: "Error desconocido" }));
+      return { success: false, error: error.error };
     }
   } catch (err) {
     console.error("Error al cargar archivos:", err);
