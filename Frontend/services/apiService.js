@@ -1,3 +1,5 @@
+const BASE_URL = "https://touched-included-elephant.ngrok-free.app";
+
 // 🔹 Subir archivo
 export async function apiUpload(file) {
   const token = localStorage.getItem("token");
@@ -7,14 +9,15 @@ export async function apiUpload(file) {
   formData.append("file", file);
 
   try {
-    const response = await fetch("https://touched-included-elephant.ngrok-free.app/upload", {
+    const response = await fetch(`${BASE_URL}/upload`, {
       method: "POST",
       headers: { "Authorization": `Bearer ${token}` },
       body: formData
     });
 
-    if (response.ok) return { success: true, ...(await response.json()) };
-    return { success: false, error: (await response.json()).error || "Error al subir archivo" };
+    const data = await response.json().catch(() => ({}));
+    if (response.ok) return { success: true, ...data };
+    return { success: false, error: data.error || "Error al subir archivo" };
 
   } catch (err) {
     console.error("Error en la conexión:", err);
@@ -25,37 +28,44 @@ export async function apiUpload(file) {
 // 🔹 Listar archivos
 export async function apiGetFiles() {
   const token = localStorage.getItem("token");
-  if (!token) return { success: false, error: "Debes iniciar sesión primero." };
+  if (!token) return { success: false, error: "Debes iniciar sesión primero.", files: [] };
 
   try {
-    const response = await fetch("https://touched-included-elephant.ngrok-free.app/files", {
+    const response = await fetch(`${BASE_URL}/files`, {
+      method: "GET",
       headers: { "Authorization": `Bearer ${token}` }
     });
 
-    if (response.ok) {
-      // 👇 Si la respuesta no es JSON válido, lo captura
-      const data = await response.json().catch(() => null);
-      if (data) return { success: true, files: data };
-      return { success: false, error: "Respuesta inválida del servidor" };
+    const data = await response.json().catch(() => null);
+
+    if (response.ok && data) {
+      // 👇 Aseguramos que siempre devuelva un array
+      const files = Array.isArray(data) ? data : (data.files || []);
+      return { success: true, files };
     } else {
-      const error = await response.json().catch(() => ({ error: "Error desconocido" }));
-      return { success: false, error: error.error };
+      const error = data?.error || "Error desconocido al obtener archivos";
+      return { success: false, files: [], error };
     }
   } catch (err) {
     console.error("Error al cargar archivos:", err);
-    return { success: false, error: "No se pudo conectar con el servidor" };
+    return { success: false, files: [], error: "No se pudo conectar con el servidor" };
   }
 }
 
-
 // 🔹 Eliminar archivo
 export async function apiDeleteFile(id) {
+  const token = localStorage.getItem("token");
+  if (!token) return { success: false, error: "Debes iniciar sesión primero." };
+
   try {
-    const response = await fetch(`https://touched-included-elephant.ngrok-free.app/files/${id}`, {
-      method: "DELETE"
+    const response = await fetch(`${BASE_URL}/files/${id}`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${token}` }
     });
-    if (response.ok) return { success: true, ...(await response.json()) };
-    return { success: false, error: "No se pudo eliminar el archivo" };
+
+    const data = await response.json().catch(() => ({}));
+    if (response.ok) return { success: true, ...data };
+    return { success: false, error: data.error || "No se pudo eliminar el archivo" };
   } catch (err) {
     console.error("Error al eliminar archivo:", err);
     return { success: false, error: "No se pudo conectar con el servidor." };
@@ -65,19 +75,19 @@ export async function apiDeleteFile(id) {
 // 🔑 Login
 export async function login(username, password) {
   try {
-    const response = await fetch("https://touched-included-elephant.ngrok-free.app/login", {
+    const response = await fetch(`${BASE_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })
     });
 
-    if (response.ok) {
-      const data = await response.json();
+    const data = await response.json().catch(() => null);
+
+    if (response.ok && data?.token) {
       localStorage.setItem("token", data.token); // guarda el JWT
       return { success: true, token: data.token };
     } else {
-      const error = await response.json().catch(() => ({ error: "Credenciales inválidas" }));
-      return { success: false, error: error.error };
+      return { success: false, error: data?.error || "Credenciales inválidas" };
     }
   } catch (err) {
     console.error("Error en login:", err);
