@@ -1,9 +1,8 @@
-import { apiUpload, apiGetFiles } from "../services/apiService.js";
+import { apiUpload, apiGetFiles, apiDeleteFile } from "../services/apiService.js";
 import { showSuccess, showError } from "../utils/uiHelpers.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const files = await apiGetFiles();
-  files.forEach(file => addFileToTable(file.filename, file.fileType, file.fileSize));
+  await loadFiles();
 });
 
 document.getElementById('uploadForm').addEventListener('submit', async (e) => {
@@ -15,20 +14,45 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
   const result = await apiUpload(file);
   if (result.success) {
     showSuccess("success-message", result.mensaje);
-    addFileToTable(file.name, file.type, file.size);
+    await loadFiles();
   } else {
-    showError("error-message", result.error || "Error al subir archivo");
+    showError("error-message", result.error);
   }
 });
 
-// función para añadir filas
-function addFileToTable(name, type, size) {
+// 🔹 Función para cargar y mostrar los archivos
+async function loadFiles() {
+  const result = await apiGetFiles();
   const tbody = document.querySelector("#filesTable tbody");
-  const row = `<tr>
-    <td>${name}</td>
-    <td>${type}</td>
-    <td>${(size / 1024).toFixed(2)} KB</td>
-    <td><button class="btn btn-danger btn-sm">Eliminar</button></td>
-  </tr>`;
-  tbody.innerHTML += row;
+  tbody.innerHTML = "";
+
+  if (result.success && result.files.length > 0) {
+    result.files.forEach(file => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${file.filename}</td>
+        <td>${(file.filePath ? file.filePath.length : 0)} KB</td>
+        <td>
+          <button class="btn btn-danger btn-sm" data-id="${file.id}">Eliminar</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+
+    // Eventos para eliminar
+    document.querySelectorAll(".btn-danger").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-id");
+        const del = await apiDeleteFile(id);
+        if (del.success) {
+          showSuccess("success-message", del.mensaje);
+          await loadFiles();
+        } else {
+          showError("error-message", del.error);
+        }
+      });
+    });
+  } else {
+    tbody.innerHTML = `<tr><td colspan="3">No hay archivos subidos</td></tr>`;
+  }
 }
