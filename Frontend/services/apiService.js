@@ -28,3 +28,23 @@ export async function apiUpload(file) {
     return { success: false, error: "No se pudo conectar con el servidor." };
   }
 }
+export async function apiGetFiles() {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("https://touched-included-elephant.ngrok-free.app/files", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      return await response.json(); // lista de archivos
+    } else {
+      return [];
+    }
+  } catch (err) {
+    console.error("Error al cargar archivos:", err);
+    return [];
+  }
+}
