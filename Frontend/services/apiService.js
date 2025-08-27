@@ -1,32 +1,30 @@
-const API_URL = "https://touched-included-elephant.ngrok-free.app";
+export async function apiUpload(file) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return { success: false, error: "Debes iniciar sesión primero." };
+  }
 
-export async function login(username, password) {
-    const response = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch("https://touched-included-elephant.ngrok-free.app/upload", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      },
+      body: formData
     });
 
-    if (!response.ok) {
-        throw new Error("Credenciales inválidas");
+    if (response.ok) {
+      const data = await response.json();
+      return { success: true, ...data };
+    } else {
+      const error = await response.json();
+      return { success: false, error: error.error || "Error al subir archivo" };
     }
-
-    return await response.json(); // Devuelve el token
-}
-
-export async function uploadFile(file, token) {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch(`${API_URL}/upload`, {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${token}` },
-        body: formData
-    });
-
-    if (!response.ok) {
-        throw new Error("Error al subir archivo");
-    }
-
-    return await response.json();
+  } catch (err) {
+    console.error("Error en la conexión:", err);
+    return { success: false, error: "No se pudo conectar con el servidor." };
+  }
 }
