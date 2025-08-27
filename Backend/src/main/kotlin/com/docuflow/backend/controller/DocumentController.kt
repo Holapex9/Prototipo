@@ -21,15 +21,7 @@ class DocumentController(private val documentRepository: DocumentRepository) {
 
         return ResponseEntity.ok(files)
     }
-
-    // 🟢 Obtener un archivo por id
-    @GetMapping("/{id}")
-    fun getFile(@PathVariable id: Long): ResponseEntity<Document> {
-        val file = documentRepository.findById(id)
-        return if (file.isPresent) ResponseEntity.ok(file.get())
-        else ResponseEntity.notFound().build()
-    }
-
+    
     // 🟢 Eliminar un archivo
     @DeleteMapping("/{id}")
     fun deleteFile(@PathVariable id: Long): ResponseEntity<Map<String, String>> {
