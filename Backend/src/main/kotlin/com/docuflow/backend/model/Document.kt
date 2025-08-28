@@ -20,4 +20,4 @@ data class Document(
 
     @Column(nullable = false)
     val size: Long // 🆕 Tamaño del archivo en bytes
-)
+)   

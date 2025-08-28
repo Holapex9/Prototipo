@@ -1,9 +1,31 @@
+import { apiUpload, apiGetFiles, apiDeleteFile } from "../services/apiService.js";
+import { showSuccess, showError } from "../utils/uiHelpers.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadFiles();
+});
+
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const file = document.getElementById('fileInput').files[0];
+  if (!file) return showError("error-message", "Selecciona un archivo");
+
+  const result = await apiUpload(file);
+  if (result.success) {
+    showSuccess("success-message", result.mensaje);
+    await loadFiles();
+  } else {
+    showError("error-message", result.error || "Error al subir archivo");
+  }
+});
+
+// 🔹 Función para cargar y mostrar los archivos
 async function loadFiles() {
   const result = await apiGetFiles();
   const tbody = document.querySelector("#filesTable tbody");
   tbody.innerHTML = "";
 
-  // ✅ Si el backend devuelve un array plano, lo normalizamos
   const files = Array.isArray(result) ? result : (result.files || []);
 
   if (files.length > 0) {
@@ -13,6 +35,7 @@ async function loadFiles() {
         <td>${file.filename}</td>
         <td>${file.size ? (file.size / 1024).toFixed(2) + " KB" : "N/A"}</td>
         <td>
+          <a class="btn btn-success btn-sm" href="https://touched-included-elephant.ngrok-free.app/files/${file.id}/download" target="_blank">Descargar</a>
           <button class="btn btn-danger btn-sm" data-id="${file.id}">Eliminar</button>
         </td>
       `;

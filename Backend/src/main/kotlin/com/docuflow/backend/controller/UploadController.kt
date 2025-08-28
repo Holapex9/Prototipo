@@ -43,10 +43,10 @@ class UploadController {
         // 3. Guardar físicamente en /uploads
         val uploadDir = File("uploads")
         if (!uploadDir.exists()) uploadDir.mkdirs()
-        val filePath = "${uploadDir.absolutePath}/${file.originalFilename}"
+        val filePath = "uploads/${file.originalFilename}" // 👈 solo ruta relativa
         file.transferTo(File(filePath))
 
-        // 4. Guardar metadatos en la BD (✅ ahora con el size)
+        // 4. Guardar metadatos en la BD
         val document = Document(
             filename = file.originalFilename!!,
             fileType = file.contentType ?: "desconocido",
